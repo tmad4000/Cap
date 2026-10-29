@@ -33,7 +33,7 @@ import {
 	clearOnboardingNextPath,
 	rememberOnboardingNextPath,
 } from "../onboarding-next";
-import { getSafeNextPath } from "../safe-next";
+import { authPageHref, getSafeNextPath } from "../safe-next";
 import { SsoErrorNotice } from "../sso-error-notice";
 
 const MotionInput = motion(Input);
@@ -441,7 +441,7 @@ export function SignupForm() {
 						>
 							Already have an account?{" "}
 							<Link
-								href="/login"
+								href={authPageHref("login", next)}
 								className="text-xs font-semibold text-blue-9 hover:text-blue-8"
 							>
 								Log in here

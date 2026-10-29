@@ -23,3 +23,8 @@ export const getSafeNextPath = (
 		return DEFAULT_AUTH_REDIRECT;
 	}
 };
+
+export const authPageHref = (
+	page: "login" | "signup",
+	next: string | null | undefined,
+) => (next ? `/${page}?next=${encodeURIComponent(next)}` : `/${page}`);

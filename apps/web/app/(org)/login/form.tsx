@@ -29,7 +29,7 @@ import { getOrganizationSSOData } from "@/actions/organization/get-organization-
 import { trackEvent } from "@/app/utils/analytics";
 import { usePublicEnv } from "@/utils/public-env";
 import { getEmailCodeCooldownSeconds, requestEmailCode } from "../auth-email";
-import { getSafeNextPath } from "../safe-next";
+import { authPageHref, getSafeNextPath } from "../safe-next";
 import { SsoErrorNotice } from "../sso-error-notice";
 
 const MotionInput = motion(Input);
@@ -459,6 +459,7 @@ export function LoginForm() {
 									>
 										<NormalLogin
 											setShowOrgInput={setShowOrgInput}
+											next={next}
 											email={email}
 											emailSent={emailSent}
 											setEmail={setEmail}
@@ -560,6 +561,7 @@ const LoginWithSSO = ({
 
 const NormalLogin = ({
 	setShowOrgInput,
+	next,
 	email,
 	emailSent,
 	setEmail,
@@ -569,6 +571,7 @@ const NormalLogin = ({
 	handleOidcSignIn,
 }: {
 	setShowOrgInput: (show: boolean) => void;
+	next: string | null | undefined;
 	email: string;
 	emailSent: boolean;
 	setEmail: (email: string) => void;
@@ -646,7 +649,7 @@ const NormalLogin = ({
 			>
 				Don't have an account?{" "}
 				<Link
-					href="/signup"
+					href={authPageHref("signup", next)}
 					className="text-xs font-semibold text-blue-9 hover:text-blue-8"
 				>
 					Sign up here
