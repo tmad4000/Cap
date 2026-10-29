@@ -203,9 +203,13 @@ export function LoginForm() {
 			is_signup: false,
 			auth_surface: "login",
 		});
-		signIn("oidc", {
-			...(nextPath ? { callbackUrl: nextPath } : {}),
-		});
+		signIn(
+			"oidc",
+			{
+				...(nextPath ? { callbackUrl: nextPath } : {}),
+			},
+			{ prompt: "select_account" },
+		);
 	}, [getNextPath]);
 
 	const handleWorkosSignIn = useCallback(
@@ -578,6 +582,25 @@ const NormalLogin = ({
 
 	return (
 		<motion.div>
+			{publicEnv.oidcAuthAvailable && (
+				<>
+					<MotionButton
+						variant="dark"
+						type="button"
+						className="w-full"
+						onClick={handleOidcSignIn}
+						disabled={loading || emailSent}
+					>
+						<LucideArrowUpRight size={20} />
+						Continue with {publicEnv.oidcName}
+					</MotionButton>
+					<div className="flex gap-4 items-center my-4">
+						<span className="flex-1 h-px bg-gray-5" />
+						<p className="text-sm text-center text-gray-10">or use email</p>
+						<span className="flex-1 h-px bg-gray-5" />
+					</div>
+				</>
+			)}
 			<motion.div layout className="flex flex-col space-y-3">
 				<MotionInput
 					id={emailInputId}
@@ -630,9 +653,7 @@ const NormalLogin = ({
 				</Link>
 			</motion.p>
 
-			{(publicEnv.googleAuthAvailable ||
-				publicEnv.workosAuthAvailable ||
-				publicEnv.oidcAuthAvailable) && (
+			{(publicEnv.googleAuthAvailable || publicEnv.workosAuthAvailable) && (
 				<>
 					<div className="flex gap-4 items-center mt-4 mb-4">
 						<span className="flex-1 h-px bg-gray-5" />
@@ -667,19 +688,6 @@ const NormalLogin = ({
 									email login. Please enter your email.
 								</p>
 							</div>
-						)}
-						{publicEnv.oidcAuthAvailable && (
-							<MotionButton
-								variant="gray"
-								type="button"
-								className="w-full"
-								layout
-								onClick={handleOidcSignIn}
-								disabled={loading || emailSent}
-							>
-								<LucideArrowUpRight size={20} />
-								Login with {publicEnv.oidcName}
-							</MotionButton>
 						)}
 						{publicEnv.workosAuthAvailable && (
 							<MotionButton
