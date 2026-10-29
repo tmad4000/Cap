@@ -49,6 +49,7 @@ const env = vi.hoisted(() => ({
 	OIDC_ISSUER: undefined as string | undefined,
 	OIDC_CLIENT_ID: undefined as string | undefined,
 	OIDC_CLIENT_SECRET: undefined as string | undefined,
+	OIDC_ID_TOKEN_SIGNING_ALG: undefined as string | undefined,
 	RESEND_API_KEY: undefined,
 	WORKOS_API_KEY: "workos-secret",
 	WORKOS_CLIENT_ID: "workos-client",
@@ -137,6 +138,7 @@ describe("authOptions", () => {
 		env.OIDC_ISSUER = undefined;
 		env.OIDC_CLIENT_ID = undefined;
 		env.OIDC_CLIENT_SECRET = undefined;
+		env.OIDC_ID_TOKEN_SIGNING_ALG = undefined;
 		env.CAP_ALLOWED_SIGNUP_DOMAINS = undefined;
 		env.CAP_BLOCKED_SIGNUP_DOMAINS = undefined;
 		env.TRUSTED_PROXY_AUTH_HEADER = undefined;
@@ -295,6 +297,22 @@ describe("authOptions", () => {
 					email_verified === true ? true : "/login?error=OidcEmailUnverified",
 				);
 			}
+		},
+	);
+
+	it.each([undefined, "EdDSA"])(
+		"sets only an explicitly configured OIDC ID token algorithm: %s",
+		(algorithm) => {
+			env.OIDC_ISSUER = "https://idp.example";
+			env.OIDC_CLIENT_ID = "oidc-client";
+			env.OIDC_CLIENT_SECRET = "oidc-secret";
+			env.OIDC_ID_TOKEN_SIGNING_ALG = algorithm;
+			const provider = authOptions().providers.find((p) => p.id === "oidc") as
+				| { client?: { id_token_signed_response_alg?: string } }
+				| undefined;
+			expect(provider?.client).toEqual(
+				algorithm ? { id_token_signed_response_alg: algorithm } : undefined,
+			);
 		},
 	);
 

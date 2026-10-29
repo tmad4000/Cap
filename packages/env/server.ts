@@ -84,6 +84,7 @@ function createServerEnv() {
 			OIDC_CLIENT_ID: z.string().optional(),
 			OIDC_CLIENT_SECRET: z.string().optional(),
 			OIDC_NAME: z.string().optional(),
+			OIDC_ID_TOKEN_SIGNING_ALG: z.string().optional(),
 
 			/// Reverse-proxy (trusted header) auth
 			// Sign in via an authenticating reverse proxy (e.g. OpenHost). Set all

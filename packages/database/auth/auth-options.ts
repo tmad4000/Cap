@@ -131,6 +131,14 @@ export const authOptions = (ssoContext?: SsoAuthContext): NextAuthOptions => {
 								clientId: oidcClientId,
 								clientSecret: oidcClientSecret,
 								idToken: true,
+								...(serverEnv().OIDC_ID_TOKEN_SIGNING_ALG
+									? {
+											client: {
+												id_token_signed_response_alg:
+													serverEnv().OIDC_ID_TOKEN_SIGNING_ALG,
+											},
+										}
+									: {}),
 								checks: ["state" as const, "pkce" as const],
 								authorization: { params: { scope: "openid email profile" } },
 								// Linking is gated on a verified email in the signIn callback,
