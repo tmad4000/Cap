@@ -10,17 +10,18 @@ export const htSans = Instrument_Sans({
 export const htSerif = localFont({
 	src: [
 		{
-			path: "./fonts/SourceSerif4-Roman.ttf",
+			path: "./fonts/SourceSerif4-Roman.woff2",
 			weight: "200 900",
 			style: "normal",
 		},
 		{
-			path: "./fonts/SourceSerif4-Italic.ttf",
+			path: "./fonts/SourceSerif4-Italic.woff2",
 			weight: "200 900",
 			style: "italic",
 		},
 	],
 	display: "swap",
+	preload: false,
 	variable: "--font-ht-serif",
 });
 
