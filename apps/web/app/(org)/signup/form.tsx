@@ -180,6 +180,24 @@ export function SignupForm() {
 		});
 	};
 
+	const handleOidcSignIn = () => {
+		const nextPath = getNextPath();
+		trackEvent("auth_started", {
+			method: "oidc",
+			is_signup: true,
+			auth_surface: "signup",
+		});
+		signIn(
+			"oidc",
+			{ ...(nextPath ? { callbackUrl: nextPath } : {}) },
+			{ prompt: "select_account" },
+		).catch(() => {
+			toast.error(
+				"Could not start sign-in. Check your connection and try again.",
+			);
+		});
+	};
+
 	const handleWorkosSignIn = useCallback(
 		(identifier: string, connectionId?: string) => {
 			if (workosSignInPending.current) return;
@@ -411,6 +429,7 @@ export function SignupForm() {
 											loading={loading}
 											oauthError={oauthError}
 											handleGoogleSignIn={handleGoogleSignIn}
+											handleOidcSignIn={handleOidcSignIn}
 										/>
 									</motion.form>
 								)}
@@ -523,6 +542,7 @@ const NormalSignup = ({
 	loading,
 	oauthError,
 	handleGoogleSignIn,
+	handleOidcSignIn,
 }: {
 	setShowOrgInput: (show: boolean) => void;
 	email: string;
@@ -531,12 +551,32 @@ const NormalSignup = ({
 	loading: boolean;
 	oauthError: boolean;
 	handleGoogleSignIn: () => void;
+	handleOidcSignIn: () => void;
 }) => {
 	const publicEnv = usePublicEnv();
 	const emailInputId = useId();
 
 	return (
 		<motion.div>
+			{publicEnv.oidcAuthAvailable && (
+				<>
+					<MotionButton
+						variant="dark"
+						type="button"
+						className="w-full"
+						onClick={handleOidcSignIn}
+						disabled={loading || emailSent}
+					>
+						<LucideArrowUpRight size={20} />
+						Continue with {publicEnv.oidcName}
+					</MotionButton>
+					<div className="flex gap-4 items-center my-4">
+						<span className="flex-1 h-px bg-gray-5" />
+						<p className="text-sm text-center text-gray-10">or use email</p>
+						<span className="flex-1 h-px bg-gray-5" />
+					</div>
+				</>
+			)}
 			<motion.div layout className="flex flex-col space-y-3">
 				<MotionInput
 					id={emailInputId}
