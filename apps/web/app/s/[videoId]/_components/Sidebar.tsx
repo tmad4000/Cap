@@ -179,10 +179,7 @@ export const Sidebar = forwardRef<{ scrollToBottom: () => void }, SidebarProps>(
 							? [
 									{
 										id: "highlights",
-										label:
-											highlights.highlights.length > 0
-												? `Highlights (${highlights.highlights.length})`
-												: "Highlights",
+										label: "Highlights",
 										disabled: false,
 									},
 								]
