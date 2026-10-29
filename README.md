@@ -60,6 +60,7 @@ Cap is designed for people and teams who do not want their recording workflow lo
 - Serve share pages from your own domain.
 - Self-host Cap Web, the API, database, media server, and object storage with Docker Compose.
 - Point Cap Desktop at your self-hosted instance from `Settings > Cap Server URL`.
+- For OIDC login, set `OIDC_ISSUER`, `OIDC_CLIENT_ID`, and `OIDC_CLIENT_SECRET` in your Compose environment, and register `https://<your-cap-host>/api/auth/callback/oidc` with your identity provider. `OIDC_NAME` labels the login button. Set `OIDC_ID_TOKEN_SIGNING_ALG` only when your issuer signs ID tokens with an algorithm other than the client default (for example, `EdDSA`); token signature verification remains enabled.
 
 ## Get Started
 
