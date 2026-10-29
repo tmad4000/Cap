@@ -29,7 +29,7 @@ import { getOrganizationSSOData } from "@/actions/organization/get-organization-
 import { trackEvent } from "@/app/utils/analytics";
 import { usePublicEnv } from "@/utils/public-env";
 import { getEmailCodeCooldownSeconds, requestEmailCode } from "../auth-email";
-import { getSafeNextPath } from "../safe-next";
+import { authPageHref, getSafeNextPath } from "../safe-next";
 import { SsoErrorNotice } from "../sso-error-notice";
 
 const MotionInput = motion(Input);
@@ -203,9 +203,13 @@ export function LoginForm() {
 			is_signup: false,
 			auth_surface: "login",
 		});
-		signIn("oidc", {
-			...(nextPath ? { callbackUrl: nextPath } : {}),
-		});
+		signIn(
+			"oidc",
+			{
+				...(nextPath ? { callbackUrl: nextPath } : {}),
+			},
+			{ prompt: "select_account" },
+		);
 	}, [getNextPath]);
 
 	const handleWorkosSignIn = useCallback(
@@ -455,6 +459,7 @@ export function LoginForm() {
 									>
 										<NormalLogin
 											setShowOrgInput={setShowOrgInput}
+											next={next}
 											email={email}
 											emailSent={emailSent}
 											setEmail={setEmail}
@@ -556,6 +561,7 @@ const LoginWithSSO = ({
 
 const NormalLogin = ({
 	setShowOrgInput,
+	next,
 	email,
 	emailSent,
 	setEmail,
@@ -565,6 +571,7 @@ const NormalLogin = ({
 	handleOidcSignIn,
 }: {
 	setShowOrgInput: (show: boolean) => void;
+	next: string | null | undefined;
 	email: string;
 	emailSent: boolean;
 	setEmail: (email: string) => void;
@@ -578,6 +585,25 @@ const NormalLogin = ({
 
 	return (
 		<motion.div>
+			{publicEnv.oidcAuthAvailable && (
+				<>
+					<MotionButton
+						variant="dark"
+						type="button"
+						className="w-full"
+						onClick={handleOidcSignIn}
+						disabled={loading || emailSent}
+					>
+						<LucideArrowUpRight size={20} />
+						Continue with {publicEnv.oidcName}
+					</MotionButton>
+					<div className="flex gap-4 items-center my-4">
+						<span className="flex-1 h-px bg-gray-5" />
+						<p className="text-sm text-center text-gray-10">or use email</p>
+						<span className="flex-1 h-px bg-gray-5" />
+					</div>
+				</>
+			)}
 			<motion.div layout className="flex flex-col space-y-3">
 				<MotionInput
 					id={emailInputId}
@@ -623,16 +649,14 @@ const NormalLogin = ({
 			>
 				Don't have an account?{" "}
 				<Link
-					href="/signup"
+					href={authPageHref("signup", next)}
 					className="text-xs font-semibold text-blue-9 hover:text-blue-8"
 				>
 					Sign up here
 				</Link>
 			</motion.p>
 
-			{(publicEnv.googleAuthAvailable ||
-				publicEnv.workosAuthAvailable ||
-				publicEnv.oidcAuthAvailable) && (
+			{(publicEnv.googleAuthAvailable || publicEnv.workosAuthAvailable) && (
 				<>
 					<div className="flex gap-4 items-center mt-4 mb-4">
 						<span className="flex-1 h-px bg-gray-5" />
@@ -667,19 +691,6 @@ const NormalLogin = ({
 									email login. Please enter your email.
 								</p>
 							</div>
-						)}
-						{publicEnv.oidcAuthAvailable && (
-							<MotionButton
-								variant="gray"
-								type="button"
-								className="w-full"
-								layout
-								onClick={handleOidcSignIn}
-								disabled={loading || emailSent}
-							>
-								<LucideArrowUpRight size={20} />
-								Login with {publicEnv.oidcName}
-							</MotionButton>
 						)}
 						{publicEnv.workosAuthAvailable && (
 							<MotionButton

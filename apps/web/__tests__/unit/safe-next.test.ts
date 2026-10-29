@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getSafeNextPath } from "@/app/(org)/safe-next";
+import { authPageHref, getSafeNextPath } from "@/app/(org)/safe-next";
 
 const ORIGIN = "https://cap.so";
 
@@ -40,5 +40,28 @@ describe("getSafeNextPath", () => {
 			"/dashboard",
 		);
 		expect(getSafeNextPath("/\\evil.com", ORIGIN)).toBe("/dashboard");
+	});
+});
+
+describe("auth page continuation", () => {
+	it("preserves a desktop sign-in request when switching pages", () => {
+		const next =
+			"https://cap.so/api/desktop/session/request?type=api_key&port=9123&platform=desktop";
+		for (const page of ["login", "signup"] as const) {
+			const link = new URL(authPageHref(page, next), ORIGIN);
+			expect(link.pathname).toBe(`/${page}`);
+			expect(getSafeNextPath(link.searchParams.get("next"), ORIGIN)).toBe(
+				"/api/desktop/session/request?type=api_key&port=9123&platform=desktop",
+			);
+		}
+	});
+	it("keeps external continuation URLs rejected on the destination page", () => {
+		const link = new URL(
+			authPageHref("signup", "https://evil.example/path"),
+			ORIGIN,
+		);
+		expect(getSafeNextPath(link.searchParams.get("next"), ORIGIN)).toBe(
+			"/dashboard",
+		);
 	});
 });
