@@ -30,6 +30,7 @@ jobs:
           bun run --cwd apps/web test
           __tests__/unit/video-highlights.test.ts
           __tests__/unit/video-highlights-actions.test.ts
+          __tests__/unit/video-highlights-route.test.ts
           __tests__/unit/share-page-round-trips.test.ts
           __tests__/unit/playback-store.test.ts
 
