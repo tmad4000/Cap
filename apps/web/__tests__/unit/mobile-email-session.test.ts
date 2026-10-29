@@ -23,6 +23,7 @@ const mocks = vi.hoisted(() => ({
 		| { configured: true }
 		| { configured: false; reason: string },
 	isCap: undefined as string | undefined,
+	allowedSignup: undefined as string | undefined,
 	tokenRow: null as TokenRow | null,
 	selectBarrier: null as null | { size: number; waiting: (() => void)[] },
 	apiKeys: [] as string[],
@@ -43,6 +44,10 @@ vi.mock("@cap/env", async (importOriginal) => {
 	const original = await importOriginal<typeof import("@cap/env")>();
 	return {
 		...original,
+		serverEnv: () => ({
+			...original.serverEnv(),
+			CAP_ALLOWED_SIGNUP_DOMAINS: mocks.allowedSignup,
+		}),
 		buildEnv: {
 			...original.buildEnv,
 			get NEXT_PUBLIC_IS_CAP() {
@@ -228,6 +233,7 @@ describe("mobile email sessions", () => {
 		mocks.sendEmail.mockReset().mockResolvedValue(undefined);
 		mocks.emailStatus = { configured: true };
 		mocks.isCap = undefined;
+		mocks.allowedSignup = undefined;
 		mocks.tokenRow = null;
 		mocks.selectBarrier = null;
 		mocks.apiKeys = [];
@@ -313,6 +319,17 @@ describe("mobile email sessions", () => {
 			"rl_auth_otp_send",
 			"rl_auth_otp_verify",
 		]);
+	});
+
+	it("allows an exact listed address but rejects another address in that domain", async () => {
+		mocks.allowedSignup = "ideaflow.io,owner@gmail.com";
+		expect((await post("request", { email: "other@gmail.com" })).status).toBe(
+			403,
+		);
+		const code = await requestCode("owner@gmail.com");
+		expect(
+			(await post("verify", { email: "owner@gmail.com", code })).status,
+		).toBe(200);
 	});
 
 	it("uses one bucket per normalized email", async () => {
