@@ -330,19 +330,24 @@ describe("authOptions", () => {
 			["other@gmail.com", false],
 			["person@ideaflow.io", true],
 		] as const) {
+			const profile = { email, email_verified: true };
 			await expect(
 				signIn({
 					user: { id: "new", email },
 					account,
-					profile: { email, email_verified: true },
+					profile,
 				}),
 			).resolves.toBe(expected);
 		}
+		const unverifiedProfile = {
+			email: "owner@gmail.com",
+			email_verified: false,
+		};
 		await expect(
 			signIn({
 				user: { id: "new", email: "owner@gmail.com" },
 				account,
-				profile: { email: "owner@gmail.com", email_verified: false },
+				profile: unverifiedProfile,
 			}),
 		).resolves.toBe("/login?error=OidcEmailUnverified");
 	});
