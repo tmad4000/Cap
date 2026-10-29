@@ -1,0 +1,37 @@
+name: Fork Web Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: fork-web-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Web typecheck, format and highlight tests
+    if: github.repository == 'tmad4000/Cap'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-js
+
+      - name: Format (Biome)
+        run: bunx biome ci . --linter-enabled=false
+
+      - name: Highlight and share-page tests
+        run: >-
+          bun run --cwd apps/web test
+          __tests__/unit/video-highlights.test.ts
+          __tests__/unit/video-highlights-actions.test.ts
+          __tests__/unit/share-page-round-trips.test.ts
+          __tests__/unit/playback-store.test.ts
+
+      - name: Typecheck
+        run: bun run typecheck
