@@ -10,13 +10,20 @@ export function isEmailAllowedForSignup(
 		return true;
 	}
 
-	const emailDomain = extractDomainFromEmail(email);
+	const normalizedEmail = email.trim().toLowerCase();
+	const emailDomain = extractDomainFromEmail(normalizedEmail);
 	if (!emailDomain) {
 		return false;
 	}
 
-	const allowedDomains = parseAllowedDomains(allowedDomainsConfig);
-	return allowedDomains.includes(emailDomain.toLowerCase());
+	const allowedEmails = allowedDomainsConfig
+		.split(",")
+		.map((entry) => entry.trim().toLowerCase())
+		.filter((entry) => z.string().email().safeParse(entry).success);
+	return (
+		allowedEmails.includes(normalizedEmail) ||
+		parseAllowedDomains(allowedDomainsConfig).includes(emailDomain)
+	);
 }
 
 /**

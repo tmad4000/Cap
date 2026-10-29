@@ -316,6 +316,42 @@ describe("authOptions", () => {
 		},
 	);
 
+	it("enforces exact email signup allowlisting on verified OIDC callbacks", async () => {
+		env.CAP_ALLOWED_SIGNUP_DOMAINS = "ideaflow.io,owner@gmail.com";
+		mocks.users = [];
+		const { signIn } = callbacksFor(authOptions());
+		const account: Account = {
+			provider: "oidc",
+			providerAccountId: "subject",
+			type: "oauth",
+		};
+		for (const [email, expected] of [
+			["owner@gmail.com", true],
+			["other@gmail.com", false],
+			["person@ideaflow.io", true],
+		] as const) {
+			const profile = { email, email_verified: true };
+			await expect(
+				signIn({
+					user: { id: "new", email },
+					account,
+					profile,
+				}),
+			).resolves.toBe(expected);
+		}
+		const unverifiedProfile = {
+			email: "owner@gmail.com",
+			email_verified: false,
+		};
+		await expect(
+			signIn({
+				user: { id: "new", email: "owner@gmail.com" },
+				account,
+				profile: unverifiedProfile,
+			}),
+		).resolves.toBe("/login?error=OidcEmailUnverified");
+	});
+
 	describe("trusted-proxy authorize", () => {
 		type Authorize = (
 			credentials: Record<string, string> | undefined,
