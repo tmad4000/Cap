@@ -1,9 +1,5 @@
-import {
-	DM_Mono,
-	Geist,
-	Instrument_Sans,
-	Source_Serif_4,
-} from "next/font/google";
+import { DM_Mono, Geist, Instrument_Sans } from "next/font/google";
+import localFont from "next/font/local";
 
 export const htSans = Instrument_Sans({
 	subsets: ["latin"],
@@ -11,10 +7,19 @@ export const htSans = Instrument_Sans({
 	variable: "--font-ht-sans",
 });
 
-export const htSerif = Source_Serif_4({
-	subsets: ["latin"],
-	weight: ["300", "400"],
-	style: ["normal", "italic"],
+export const htSerif = localFont({
+	src: [
+		{
+			path: "./fonts/SourceSerif4-Roman.ttf",
+			weight: "200 900",
+			style: "normal",
+		},
+		{
+			path: "./fonts/SourceSerif4-Italic.ttf",
+			weight: "200 900",
+			style: "italic",
+		},
+	],
 	display: "swap",
 	variable: "--font-ht-serif",
 });
