@@ -79,8 +79,9 @@ const sourceFiles = ["apps/web/app/layout.tsx"];
 	}
 	chrome.stdio[4].on("data", (data) => {
 		buffer += data.toString();
-		let i;
-		while ((i = buffer.indexOf("\0")) >= 0) {
+		while (true) {
+			const i = buffer.indexOf("\0");
+			if (i < 0) break;
 			const m = JSON.parse(buffer.slice(0, i));
 			buffer = buffer.slice(i + 1);
 			if (pending.has(m.id)) {
