@@ -103,6 +103,13 @@ export default function RootLayout({ children }: PropsWithChildren) {
 				<meta name="theme-color" content="#ffffff" />
 			</head>
 			<body suppressHydrationWarning>
+				<Script
+					src="https://analytics.ideaflow.app/ideaflow.js"
+					data-product="cap"
+					data-respect-dnt="true"
+					data-privacy="strict"
+					strategy="afterInteractive"
+				/>
 				<Script src="/theme-script.js" strategy="beforeInteractive" />
 				{buildEnv.NEXT_PUBLIC_OPENPANEL_CLIENT_ID ? (
 					<OpenPanelComponent
