@@ -101,7 +101,8 @@ export default function RootLayout({ children }: PropsWithChildren) {
 				<meta name="theme-color" content="#ffffff" />
 			</head>
 			<body suppressHydrationWarning>
-				<Script async
+				<Script
+					async
 					src="https://analytics.ideaflow.app/ideaflow.js"
 					data-product="cap"
 					data-respect-dnt="true"
